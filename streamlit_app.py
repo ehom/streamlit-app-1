@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 import platform
+import time
 
 sidebar = st.sidebar
 
@@ -29,9 +30,13 @@ n_epochs = st.selectbox("How many epochs to train the pricing model?", ("1000", 
 
 class ourProgressCallback(tf.keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs={}):
-      if epoch == self.params['epochs'] - 1:
+      epoches = self.params['epochs']
+      if epoch == epoches - 1:
           loss = logs.get('loss')
           st.write(f"In the last epoch ({epoch}), loss was {round(loss, 4)}")
+          status_bar.progress(100, text="Training model...completed")
+      else:
+          status_bar.progress(epoch/epoches, text="Training model...")
 
 def house_model(xs, ys):
     # Define input and output tensors with the values for houses with 1 up to 6 bedrooms
@@ -55,9 +60,9 @@ def house_model(xs, ys):
 
 
 if st.button('Train Model'):
-    with st.spinner(text="training..."):
-        model = house_model(xs, ys)
-        st.success("training...completed")
+    status_bar = st.progress(0, text="Training model...")
+    time.sleep(1)
+    model = house_model(xs, ys)
 
     prediction = model.predict([7])
     st.write(f"The predicated price of that home is {prediction[0]}")
