@@ -5,32 +5,6 @@ import pandas as pd
 import platform
 import time
 
-sidebar = st.sidebar
-
-with sidebar:
-    st.header('Intro to TensorFlow in AI, ML, and Deep Learning')
-    st.write('Assignment 1')
-    st.divider()
-    st.write("**Application Properties**")
-    st.markdown("* Python {}".format(platform.python_version()))
-    st.markdown("* Tensorflow {}".format(tf.__version__))
-
-xs = np.array([1, 2, 3, 4, 5, 6], dtype=int)
-ys = np.array([100, 150, 200, 250, 300, 350], dtype=float)
-
-# putting it in a dataframe, just so it can be displayed as a 2 column table
-df = pd.DataFrame({'xs': xs, 'ys': ys}, columns=['xs', 'ys'])
-
-st.write("House Pricing Model")
-df = df.set_index('xs')
-st.dataframe(df)
-
-
-n_epochs = st.selectbox("How many epochs to train the pricing model?", ("1000", "500", "100"))
-
-
-global max_loss
-max_loss = None
 
 class ourProgressCallback(tf.keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs={}):
@@ -44,13 +18,13 @@ class ourProgressCallback(tf.keras.callbacks.Callback):
 
       if epoch == epoches - 1:
           status_bar.progress(100, text="Training model...completed")
-          loss_progress.progress(0, text="Loss: {}".format(round(loss, 4)))
+          loss_progress.progress(loss/max_loss, text="Loss: {}".format(round(loss, 4)))
       else:
           status_bar.progress(epoch/epoches, text="Epoch {}: Training model...".format(epoch))
-          loss_progress.progress(100 - round(epoch/epoches), text="Tracking loss ({}) ...".format(loss))
+          loss_progress.progress(loss/max_loss, text="Tracking loss ({}) ...".format(loss))
 
 
-def house_model(xs, ys):
+def house_model(xs: np.array, ys: np.array):
     # Define input and output tensors with the values for houses with 1 up to 6 bedrooms
     # Hint: Remember to explictly set the dtype as float
     # Declare model inputs and outputs for training
@@ -71,13 +45,37 @@ def house_model(xs, ys):
     return model
 
 
-if st.button('Train Model'):
-    status_bar = st.progress(0, text="Training model...")
-    loss_progress = st.progress(100, text="Tracking loss...")
-    time.sleep(1)
-    model = house_model(xs, ys)
+if __name__ == "__main__":
+    with st.sidebar:
+        st.header('Intro to TensorFlow in AI, ML, and Deep Learning')
+        st.write('Assignment 1')
+        st.divider()
+        st.write("**Application Properties**")
+        st.markdown("* Python {}".format(platform.python_version()))
+        st.markdown("* Tensorflow {}".format(tf.__version__))
 
-    prediction = model.predict([7])
-    st.write(f"The predicated price of that home is {prediction[0]}")
-    st.balloons()
+    n_epochs = st.selectbox("How many epochs to train the pricing model?", ("1000", "500", "100"))
+
+    global max_loss
+    max_loss = None
+
+    xs = np.array([1, 2, 3, 4, 5, 6], dtype=int)
+    ys = np.array([100, 150, 200, 250, 300, 350], dtype=float)
+
+    # putting it in a dataframe, just so it can be displayed as a 2 column table
+    df = pd.DataFrame({'xs': xs, 'ys': ys}, columns=['xs', 'ys'])
+
+    st.write("House Pricing Model")
+    df = df.set_index('xs')
+    st.dataframe(df)
+
+    if st.button('Train Model'):
+        status_bar = st.progress(0, text="Training model...")
+        loss_progress = st.progress(100, text="Tracking loss...")
+        time.sleep(1)
+        model = house_model(xs, ys)
+
+        prediction = model.predict([7])
+        st.write(f"The predicated price of that home is {prediction[0]}")
+        st.balloons()
 
