@@ -29,15 +29,26 @@ st.dataframe(df)
 n_epochs = st.selectbox("How many epochs to train the pricing model?", ("1000", "500", "100"))
 
 
+global max_loss
+max_loss = None
+
 class ourProgressCallback(tf.keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs={}):
+      global max_loss
+
       epoches = self.params['epochs']
+      loss = logs.get('loss')
+
+      if max_loss is None:
+          max_loss = loss
+
       if epoch == epoches - 1:
-          loss = logs.get('loss')
-          st.write(f"In the last epoch ({epoch}), loss was {round(loss, 4)}")
           status_bar.progress(100, text="Training model...completed")
+          loss_progress.progress(loss/max_loss, text="Loss: {}".format(round(loss, 4)))
       else:
-          status_bar.progress(epoch/epoches, text="Training model...")
+          status_bar.progress(epoch/epoches, text="Epoch {}: Training model...".format(epoch))
+          loss_progress.progress(loss/max_loss, text="Tracking loss ({}) ...".format(loss))
+
 
 def house_model(xs, ys):
     # Define input and output tensors with the values for houses with 1 up to 6 bedrooms
@@ -62,6 +73,7 @@ def house_model(xs, ys):
 
 if st.button('Train Model'):
     status_bar = st.progress(0, text="Training model...")
+    loss_progress = st.progress(100, text="Tracking loss...")
     time.sleep(1)
     model = house_model(xs, ys)
 
