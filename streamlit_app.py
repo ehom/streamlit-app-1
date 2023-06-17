@@ -44,10 +44,10 @@ class ourProgressCallback(tf.keras.callbacks.Callback):
 
       if epoch == epoches - 1:
           status_bar.progress(100, text="Training model...completed")
-          loss_progress.progress(loss/max_loss, text="Loss: {}".format(round(loss, 4)))
+          loss_progress.progress(0, text="Loss: {}".format(round(loss, 4)))
       else:
           status_bar.progress(epoch/epoches, text="Epoch {}: Training model...".format(epoch))
-          loss_progress.progress(loss/max_loss, text="Tracking loss ({}) ...".format(loss))
+          loss_progress.progress(100 - round(epoch/epoches), text="Tracking loss ({}) ...".format(loss))
 
 
 def house_model(xs, ys):
