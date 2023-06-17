@@ -45,10 +45,11 @@ if st.button('Train Model'):
     xs = np.array([1, 2, 3, 4, 5, 6], dtype=int)
     ys = np.array([100, 150, 200, 250, 300, 350], dtype=float)
 
-
-
+    # putting it in a dataframe, just so it can be displayed as a 2 column table
     df = pd.DataFrame({'xs': xs, 'ys': ys}, columns=['xs', 'ys'])
-    st.write(df)
+
+    df = df.set_index('xs')
+    st.dataframe(df)
 
     model = house_model(xs, ys)
 
