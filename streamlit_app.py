@@ -11,6 +11,8 @@ using_tf_version = "Using TensorFlow {}".format(tf.__version__)
 
 st.write(using_tf_version)
 
+st.sidebar.write("testing")
+
 n_epochs = st.selectbox("How many epochs to train the pricing model?", ("1000", "500", "100"))
 
 class ourProgressCallback(tf.keras.callbacks.Callback):
