@@ -8,11 +8,10 @@ sidebar = st.sidebar
 
 with sidebar:
     st.header('Introduction to TensorFlow in Artifical Intelligence, Machine Learning, and Deep Learning')
-    using_tf_version = "TensorFlow {}".format(tf.__version__)
     st.write('Assignment 1')
     st.divider()
-    st.write("Python {}".format(platform.python_version()))
-    st.write(using_tf_version)
+    st.markdown("* Python {}".format(platform.python_version()))
+    st.markdown("* Tensorflow {}".format(tf.__version__))
 
 n_epochs = st.selectbox("How many epochs to train the pricing model?", ("1000", "500", "100"))
 
