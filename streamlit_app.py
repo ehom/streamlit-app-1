@@ -8,9 +8,10 @@ import time
 sidebar = st.sidebar
 
 with sidebar:
-    st.header('Introduction to TensorFlow in Artifical Intelligence, Machine Learning, and Deep Learning')
+    st.header('Intro to TensorFlow in AI, ML, and Deep Learning')
     st.write('Assignment 1')
     st.divider()
+    st.write("**Application Properties**")
     st.markdown("* Python {}".format(platform.python_version()))
     st.markdown("* Tensorflow {}".format(tf.__version__))
 
