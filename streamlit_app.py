@@ -13,7 +13,19 @@ with sidebar:
     st.markdown("* Python {}".format(platform.python_version()))
     st.markdown("* Tensorflow {}".format(tf.__version__))
 
+xs = np.array([1, 2, 3, 4, 5, 6], dtype=int)
+ys = np.array([100, 150, 200, 250, 300, 350], dtype=float)
+
+# putting it in a dataframe, just so it can be displayed as a 2 column table
+df = pd.DataFrame({'xs': xs, 'ys': ys}, columns=['xs', 'ys'])
+
+st.write("House Pricing Model")
+df = df.set_index('xs')
+st.dataframe(df)
+
+
 n_epochs = st.selectbox("How many epochs to train the pricing model?", ("1000", "500", "100"))
+
 
 class ourProgressCallback(tf.keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs={}):
@@ -43,15 +55,6 @@ def house_model(xs, ys):
 
 
 if st.button('Train Model'):
-    xs = np.array([1, 2, 3, 4, 5, 6], dtype=int)
-    ys = np.array([100, 150, 200, 250, 300, 350], dtype=float)
-
-    # putting it in a dataframe, just so it can be displayed as a 2 column table
-    df = pd.DataFrame({'xs': xs, 'ys': ys}, columns=['xs', 'ys'])
-
-    df = df.set_index('xs')
-    st.dataframe(df)
-
     with st.spinner(text="training..."):
         model = house_model(xs, ys)
         st.success("training...completed")
