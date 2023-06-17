@@ -53,7 +53,9 @@ if st.button('Train Model'):
     df = df.set_index('xs')
     st.dataframe(df)
 
-    model = house_model(xs, ys)
+    with st.spinner(text="training..."):
+        model = house_model(xs, ys)
+        st.success("training...completed")
 
     prediction = model.predict([7])
     st.write(f"The predicated price of that home is {prediction[0]}")
