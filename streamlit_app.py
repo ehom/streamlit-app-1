@@ -5,23 +5,31 @@ import pandas as pd
 import platform
 import time
 
+def create_progress_cb(progress_bar):
+    def inner_function(epoch, epochs):
+        offseted_epoch = epoch + 1
+        if offseted_epoch == epochs:
+            progress_bar.progress(100, text="Epoch {} of {}: Training model...completed".format(offseted_epoch, epochs))
+        else:
+            progress_bar.progress(epoch/epochs, text="Epoch {} of {}: Training model...".format(offseted_epoch, epochs))
+    return inner_function
+
 
 class ourProgressCallback(tf.keras.callbacks.Callback):
+  def __init__(self, progress_cb):
+      self.progress_cb = progress_cb
+
   def on_epoch_end(self, epoch, logs={}):
       global max_loss
 
-      epoches = self.params['epochs']
+      epochs = self.params['epochs']
       loss = logs.get('loss')
 
       if max_loss is None:
           max_loss = loss
 
-      if epoch == epoches - 1:
-          status_bar.progress(100, text="Training model...completed")
-          loss_progress.progress(loss/max_loss, text="Loss: {}".format(round(loss, 4)))
-      else:
-          status_bar.progress(epoch/epoches, text="Epoch {}: Training model...".format(epoch))
-          loss_progress.progress(loss/max_loss, text="Tracking loss ({}) ...".format(loss))
+      self.progress_cb(epoch, epochs)
+      loss_progress.progress(loss/max_loss, text="Loss: {}".format(round(loss, 4)))
 
 
 def house_model(xs: np.array, ys: np.array):
@@ -39,8 +47,8 @@ def house_model(xs: np.array, ys: np.array):
     model.compile(optimizer="sgd", loss="mean_squared_error")
 
     # Train your model for 1000 epochs by feeding the i/o tensors
-
-    model.fit(xs, ys, epochs=int(n_epochs), callbacks=[ourProgressCallback()])
+    progress_cb = create_progress_cb(status_bar)
+    model.fit(xs, ys, epochs=int(n_epochs), callbacks=[ourProgressCallback(progress_cb)])
 
     return model
 
